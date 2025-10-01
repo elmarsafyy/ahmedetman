@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riyadh.Health - Premium Healthcare Domain For Sale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 1000;
+            font-weight: 600;
+            color: #2d6a4f;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-switcher:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            margin-top: 80px;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .domain-name {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2d6a4f 0%, #52b788 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+        
+        .tagline {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .price-tag {
+            background: linear-gradient(135deg, #52b788 0%, #40916c 100%);
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            padding: 20px 40px;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(45, 106, 79, 0.3);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .feature {
+            background: #f1faee;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2d6a4f;
+            margin-bottom: 10px;
+        }
+        
+        .feature-text {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .cta-section {
+            margin-top: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%);
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #2d6a4f;
+            padding: 18px 50px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .benefits {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .benefits-title {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2d6a4f;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f1faee;
+            border-radius: 10px;
+        }
+        
+        .check-icon {
+            color: #52b788;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        [lang="ar"] {
+            direction: rtl;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        [lang="ar"] .check-icon {
+            margin-right: 0;
+            margin-left: 15px;
+        }
+        
+        [lang="ar"] .lang-switcher {
+            right: auto;
+            left: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 20px;
+                margin-top: 80px;
+            }
+            
+            .domain-name {
+                font-size: 2em;
+            }
+            
+            .tagline {
+                font-size: 1.1em;
+            }
+            
+            .price-tag {
+                font-size: 1.5em;
+                padding: 15px 30px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-title {
+                font-size: 1.5em;
+            }
+            
+            .cta-button {
+                padding: 15px 35px;
+                font-size: 1em;
+            }
+            
+            .lang-switcher {
+                top: 15px;
+                right: 15px;
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            
+            [lang="ar"] .lang-switcher {
+                right: auto;
+                left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher" onclick="toggleLanguage()">
+        <span id="langText">العربية 🌐</span>
+    </div>
+    
+    <div class="container">
+        <div class="hero">
+            <div class="domain-name">Riyadh.Health</div>
+            <div class="tagline" id="tagline">Your Gateway to Healthcare Excellence in Saudi Arabia's Capital</div>
+            
+            <div class="price-tag" id="priceTag">🔥 Make an Offer</div>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🏥</div>
+                    <div class="feature-title" id="feature1Title">Premium Healthcare Brand</div>
+                    <div class="feature-text" id="feature1Text">Perfect for hospitals, clinics, and health services in Riyadh</div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title" id="feature2Title">Perfect SEO Value</div>
+                    <div class="feature-text" id="feature2Text">Combines location and industry keywords for maximum visibility</div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">💎</div>
+                    <div class="feature-title" id="feature3Title">Memorable & Professional</div>
+                    <div class="feature-text" id="feature3Text">Easy to remember, type, and share with patients</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="benefits">
+            <h2 class="benefits-title" id="benefitsTitle">Why This Domain is Perfect for You</h2>
+            
+            <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <div id="benefit1"><strong>Instant Credibility:</strong> Establish your healthcare business as a trusted Riyadh authority from day one</div>
+            </div>
+            
+            <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <div id="benefit2"><strong>Geographic Targeting:</strong> Capture patients specifically searching for healthcare in Riyadh</div>
+            </div>
+            
+            <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <div id="benefit3"><strong>Brand Recognition:</strong> Build a powerful healthcare brand that resonates with your target market</div>
+            </div>
+            
+            <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <div id="benefit4"><strong>Investment Value:</strong> Premium domains appreciate over time - a smart business investment</div>
+            </div>
+            
+            <div class="benefit-item">
+                <span class="check-icon">✓</span>
+                <div id="benefit5"><strong>Versatile Use:</strong> Perfect for medical centers, health portals, telemedicine, or wellness services</div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2 class="cta-title" id="ctaTitle">Ready to Transform Your Healthcare Business?</h2>
+            <p style="font-size: 1.1em; margin-bottom: 30px;" id="ctaSubtitle">Don't miss this opportunity to own a premium healthcare domain in Saudi Arabia's fastest-growing city</p>
+            <a href="mailto:ahmedetman290@ymail.com?subject=Interested in Riyadh.Health&body=Hello, I'm interested in purchasing the domain Riyadh.Health. Please provide me with more details." class="cta-button" id="ctaButton">Contact Me Now</a>
+        </div>
+    </div>
+    
+    <script>
+        let currentLang = 'en';
+        
+        const translations = {
+            en: {
+                langText: 'العربية 🌐',
+                tagline: "Your Gateway to Healthcare Excellence in Saudi Arabia's Capital",
+                priceTag: '🔥 Make an Offer',
+                feature1Title: 'Premium Healthcare Brand',
+                feature1Text: 'Perfect for hospitals, clinics, and health services in Riyadh',
+                feature2Title: 'Perfect SEO Value',
+                feature2Text: 'Combines location and industry keywords for maximum visibility',
+                feature3Title: 'Memorable & Professional',
+                feature3Text: 'Easy to remember, type, and share with patients',
+                benefitsTitle: 'Why This Domain is Perfect for You',
+                benefit1: '<strong>Instant Credibility:</strong> Establish your healthcare business as a trusted Riyadh authority from day one',
+                benefit2: '<strong>Geographic Targeting:</strong> Capture patients specifically searching for healthcare in Riyadh',
+                benefit3: '<strong>Brand Recognition:</strong> Build a powerful healthcare brand that resonates with your target market',
+                benefit4: '<strong>Investment Value:</strong> Premium domains appreciate over time - a smart business investment',
+                benefit5: '<strong>Versatile Use:</strong> Perfect for medical centers, health portals, telemedicine, or wellness services',
+                ctaTitle: 'Ready to Transform Your Healthcare Business?',
+                ctaSubtitle: "Don't miss this opportunity to own a premium healthcare domain in Saudi Arabia's fastest-growing city",
+                ctaButton: 'Contact Me Now'
+            },
+            ar: {
+                langText: 'English 🌐',
+                tagline: 'بوابتك نحو التميز في الرعاية الصحية في عاصمة المملكة',
+                priceTag: '🔥 قدم عرضك',
+                feature1Title: 'علامة صحية مميزة',
+                feature1Text: 'مثالي للمستشفيات والعيادات والخدمات الصحية في الرياض',
+                feature2Title: 'قيمة SEO مثالية',
+                feature2Text: 'يجمع بين الموقع والكلمات المفتاحية للصناعة لأقصى ظهور',
+                feature3Title: 'سهل التذكر واحترافي',
+                feature3Text: 'سهل التذكر والكتابة والمشاركة مع المرضى',
+                benefitsTitle: 'لماذا هذا النطاق مثالي لك',
+                benefit1: '<strong>مصداقية فورية:</strong> أسس عملك الصحي كجهة موثوقة في الرياض من اليوم الأول',
+                benefit2: '<strong>استهداف جغرافي:</strong> اجذب المرضى الباحثين عن خدمات صحية في الرياض',
+                benefit3: '<strong>تميز العلامة التجارية:</strong> ابنِ علامة صحية قوية تلقى صدى لدى السوق المستهدف',
+                benefit4: '<strong>قيمة استثمارية:</strong> النطاقات المميزة تزداد قيمتها مع الوقت - استثمار ذكي',
+                benefit5: '<strong>استخدام متعدد:</strong> مثالي للمراكز الطبية وبوابات الصحة والطب عن بعد',
+                ctaTitle: 'هل أنت مستعد لتحويل أعمالك الصحية؟',
+                ctaSubtitle: 'لا تفوت هذه الفرصة لامتلاك نطاق صحي مميز في المدينة الأسرع نمواً في السعودية',
+                ctaButton: 'تواصل معي الآن'
+            }
+        };
+        
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            document.documentElement.setAttribute('lang', currentLang);
+            
+            const trans = translations[currentLang];
+            
+            document.getElementById('langText').textContent = trans.langText;
+            document.getElementById('tagline').textContent = trans.tagline;
+            document.getElementById('priceTag').textContent = trans.priceTag;
+            document.getElementById('feature1Title').textContent = trans.feature1Title;
+            document.getElementById('feature1Text').textContent = trans.feature1Text;
+            document.getElementById('feature2Title').textContent = trans.feature2Title;
+            document.getElementById('feature2Text').textContent = trans.feature2Text;
+            document.getElementById('feature3Title').textContent = trans.feature3Title;
+            document.getElementById('feature3Text').textContent = trans.feature3Text;
+            document.getElementById('benefitsTitle').textContent = trans.benefitsTitle;
+            document.getElementById('benefit1').innerHTML = trans.benefit1;
+            document.getElementById('benefit2').innerHTML = trans.benefit2;
+            document.getElementById('benefit3').innerHTML = trans.benefit3;
+            document.getElementById('benefit4').innerHTML = trans.benefit4;
+            document.getElementById('benefit5').innerHTML = trans.benefit5;
+            document.getElementById('ctaTitle').textContent = trans.ctaTitle;
+            document.getElementById('ctaSubtitle').textContent = trans.ctaSubtitle;
+            document.getElementById('ctaButton').textContent = trans.ctaButton;
+        }
+    </script>
+</body>
+</html>
