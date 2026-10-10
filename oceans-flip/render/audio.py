@@ -11,7 +11,13 @@ from scipy import signal
 import soundfile as sf
 
 SR = 48000
-DUR = 75.0
+if "--timemap" in sys.argv:          # cues are authored on the original timeline; re-time them
+    import timemap as _tm
+    DUR = _tm.DUR_NEW
+    TM = lambda x: float(_tm.old_to_new(x))
+else:
+    DUR = 75.0
+    TM = lambda x: x
 N = int(SR * DUR)
 rng = np.random.default_rng(2026)
 T = np.arange(N) / SR
@@ -124,10 +130,15 @@ CHORDS = [  # start, chord tones (name, octave)
 ]
 
 
+def chords():
+    return [(TM(t), n) for t, n in CHORDS]
+
+
 def pad():
     L = np.zeros(N, np.float32)
     R = np.zeros(N, np.float32)
-    for (t0, notes), (t1, _) in zip(CHORDS, CHORDS[1:]):
+    ch = chords()
+    for (t0, notes), (t1, _) in zip(ch, ch[1:]):
         a, rel = 1.6, 2.2
         i0 = int(t0 * SR)
         i1 = min(N, int((t1 + rel) * SR))
@@ -157,7 +168,8 @@ def pad():
 
 def sub_drone():
     s = np.zeros(N, np.float32)
-    for (t0, notes), (t1, _) in zip(CHORDS, CHORDS[1:]):
+    ch = chords()
+    for (t0, notes), (t1, _) in zip(ch, ch[1:]):
         if not notes:
             continue
         f = hz(notes[0][0], 1) if notes[0][1] >= 2 else hz(notes[0][0], notes[0][1])
@@ -172,18 +184,19 @@ def arps():
     """Soft plucked ostinato for the middle build (restrained)."""
     out = np.zeros(N, np.float32)
     step = 60 / 100 / 2
-    t = 31.0
+    t = TM(31.0)
     k = 0
-    while t < 66.5:
-        notes = [n for (t0, n) in CHORDS if t0 <= t][-1]
+    ch = chords()
+    while t < TM(66.5):
+        notes = [n for (t0, n) in ch if t0 <= t][-1]
         if notes:
             name, octv = notes[[2, 3, 4, 3][k % 4] % len(notes)]
             f = hz(name, octv + 1)
             n = int(0.9 * SR)
             tt = np.arange(n) / SR
             x = (np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(4 * np.pi * f * tt)) * np.exp(-tt * 5.5)
-            vel = 0.35 + 0.65 * np.clip((t - 31) / 30, 0, 1)
-            if 47.9 < t < 50.0:
+            vel = 0.35 + 0.65 * np.clip((t - TM(31)) / (TM(61) - TM(31)), 0, 1)
+            if TM(47.9) < t < TM(50.0):
                 vel *= 0.5
             i0 = int(t * SR)
             i1 = min(N, i0 + n)
@@ -267,7 +280,7 @@ def build(vo_path, out_path):
     duck = 1 - 0.55 * venv
 
     # ---- music
-    intensity = np.interp(T, [0, 8, 16, 30, 31, 43, 50, 54, 62, 64, 67.8, 70, 73, 75],
+    intensity = np.interp(T, [TM(x) for x in (0, 8, 16, 30, 31, 43, 50, 54, 62, 64, 67.8, 70, 73, 75)],
                           [0.75, 0.6, 0.55, 0.62, 0.5, 0.62, 0.7, 0.8, 0.7, 0.85, 1.0, 1.0, 0.9, 0.0]).astype(np.float32)
     music = pad() * db(-25) * intensity[:, None]
     music += pan(sub_drone() * db(-27) * intensity, 0)
@@ -282,7 +295,7 @@ def build(vo_path, out_path):
     for t0, g, f0 in ((0.05, 1.0, 52), (1.58, 0.55, 60), (3.4, 0.55, 56), (7.44, 0.8, 46), (11.6, 0.6, 55),
                       (26.15, 0.9, 42), (30.8, 0.6, 40), (39.05, 0.45, 55), (43.36, 0.5, 50), (50.0, 0.45, 60),
                       (63.1, 0.7, 48), (64.88, 0.8, 50), (67.84, 0.55, 55), (72.0, 0.5, 58)):
-        sfx += pan(reverb(hit(t0, f0, g), 2.5, 0.3), 0) * db(-12)
+        sfx += pan(reverb(hit(TM(t0), f0, g), 2.5, 0.3), 0) * db(-12)
 
     # ---- whooshes
     for t0, d, f0, f1, g, p, rv in ((1.25, 0.6, 250, 2500, 0.7, -0.4, False), (3.05, 0.6, 2500, 300, 0.7, 0.4, False),
@@ -292,36 +305,36 @@ def build(vo_path, out_path):
                                     (49.6, 0.7, 300, 2600, 0.6, 0, False), (53.6, 0.7, 3000, 300, 0.6, 0, False),
                                     (61.0, 0.8, 400, 2400, 0.5, 0.2, False), (62.25, 0.9, 4000, 200, 0.9, 0, False),
                                     (67.6, 0.9, 300, 3000, 0.6, 0, False)):
-        sfx += pan(whoosh(t0, d, f0, f1, g, rv), p) * db(-17)
+        sfx += pan(whoosh(TM(t0), TM(t0 + d) - TM(t0), f0, f1, g, rv), p) * db(-17)
 
     # ---- beds
     under = lp(noise(color="brown"), 420) * (0.75 + 0.25 * np.sin(2 * np.pi * 0.13 * T)).astype(np.float32)
-    uw_gate = gate(18.0, 31.4, 0.5) + gate(54.0, 61.5, 0.5)
+    uw_gate = gate(TM(18.0), TM(31.4), 0.5) + gate(TM(54.0), TM(61.5), 0.5)
     sfx += pan(under * uw_gate, 0) * db(-21)
-    sfx += pan(bubbles(18.1, 31.2, 4.5) * gate(18.0, 31.4, 0.4), 0.25) * db(-27)
-    sfx += pan(bubbles(54.1, 61.3, 3.0) * gate(54.0, 61.5, 0.4), -0.25) * db(-29)
-    splash = lp(noise(), 2500) * env(26.12, 0.01, 0.3, 1.4)
+    sfx += pan(bubbles(TM(18.1), TM(31.2), 4.5) * gate(TM(18.0), TM(31.4), 0.4), 0.25) * db(-27)
+    sfx += pan(bubbles(TM(54.1), TM(61.3), 3.0) * gate(TM(54.0), TM(61.5), 0.4), -0.25) * db(-29)
+    splash = lp(noise(), 2500) * env(TM(26.12), 0.01, 0.3, 1.4)
     sfx += pan(reverb(splash, 1.8, 0.4), 0) * db(-14)
-    sfx += pan(bubbles(26.2, 28.6, 26.0, 0.8) * gate(26.2, 28.8, 0.3), 0) * db(-22)
+    sfx += pan(bubbles(TM(26.2), TM(28.6), 26.0, 0.8) * gate(TM(26.2), TM(28.8), 0.3), 0) * db(-22)
 
     swell = (0.6 + 0.4 * np.sin(2 * np.pi * 0.16 * T)).astype(np.float32)
-    sea = bp(noise(color="pink"), 120, 1800) * swell * gate(31.4, 39.2, 0.6)
+    sea = bp(noise(color="pink"), 120, 1800) * swell * gate(TM(31.4), TM(39.2), 0.6)
     sfx += np.stack([sea, np.roll(sea, 1500)], 1) * db(-22)
-    rain = hp(noise(), 2500) * gate(33.5, 37.6, 1.0) * np.clip(1 - (T - 34) / 4, 0, 1)
+    rain = hp(noise(), 2500) * gate(TM(33.5), TM(37.6), 1.0) * np.clip(1 - (T - TM(34)) / (TM(38) - TM(34)), 0, 1)
     sfx += np.stack([rain, np.roll(rain, 800)], 1) * db(-30)
 
     gust = (0.55 + 0.45 * np.sin(2 * np.pi * 0.21 * T) * np.sin(2 * np.pi * 0.07 * T + 1)).astype(np.float32)
-    wind = sweep_bp(noise(color="pink"), 250, 900, 43.2, 48.0, q=1.2) * gust * gate(43.3, 48.2, 0.6)
-    storm = lp(noise(color="brown"), 160) * gate(43.3, 48.2, 0.8)
+    wind = sweep_bp(noise(color="pink"), 250, 900, TM(43.2), TM(48.0), q=1.2) * gust * gate(TM(43.3), TM(48.2), 0.6)
+    storm = lp(noise(color="brown"), 160) * gate(TM(43.3), TM(48.2), 0.8)
     sfx += np.stack([wind, np.roll(wind, 2400)], 1) * db(-18) + pan(storm, 0) * db(-24)
-    bliz = bp(noise(), 700, 3800) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.6 * T)).astype(np.float32) * gate(47.8, 50.1, 0.35)
-    howl = np.sin(2 * np.pi * (620 + 90 * np.sin(2 * np.pi * 0.35 * T)) * T).astype(np.float32) * 0.15 * gate(47.9, 50.1, 0.5)
+    bliz = bp(noise(), 700, 3800) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.6 * T)).astype(np.float32) * gate(TM(47.8), TM(50.1), 0.35)
+    howl = np.sin(2 * np.pi * (620 + 90 * np.sin(2 * np.pi * 0.35 * T)) * T).astype(np.float32) * 0.15 * gate(TM(47.9), TM(50.1), 0.5)
     sfx += np.stack([bliz + howl, np.roll(bliz, 1900) + howl], 1) * db(-19)
 
-    shimmer = hp(noise(), 5000) * np.clip((T - 50) / 3.5, 0, 1).astype(np.float32) * gate(50.0, 54.0, 0.3)
+    shimmer = hp(noise(), 5000) * np.clip((T - TM(50)) / (TM(53.5) - TM(50)), 0, 1).astype(np.float32) * gate(TM(50.0), TM(54.0), 0.3)
     sfx += np.stack([shimmer, np.roll(shimmer, 600)], 1) * db(-31)
     for t0 in (72.0, 73.28):
-        c = reverb(chime(t0, hz("F", 5) if t0 < 73 else hz("C", 6), 1.0), 3.0, 0.5)
+        c = reverb(chime(TM(t0), hz("F", 5) if t0 < 73 else hz("C", 6), 1.0), 3.0, 0.5)
         sfx += pan(c, -0.15 if t0 < 73 else 0.15) * db(-24)
 
     sfx *= (1 - 0.35 * venv)[:, None]

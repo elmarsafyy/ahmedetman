@@ -14,6 +14,9 @@ import underwater as U
 import pangaea as P
 
 DURATION = 75.0
+# "full": headlines + labels + end card (English cut). "keywords": numbers / single keywords only,
+# no sentences and no channel branding (Egyptian Arabic cut).
+TEXT_MODE = C.os.environ.get("OF_TEXT", "full")
 WHITE = (255, 255, 255)
 GOLD = (255, 204, 102)
 TURQ = (94, 234, 230)
@@ -104,7 +107,7 @@ def render_frame(t):
     fr = C.finish(img, t, grade=gr)
     if ex is not None and ex[0] == "xs":
         fr = X.overlay(fr, t, ex[1])
-    fr = overlay(fr, t, ex)
+    fr = overlay(fr, t, ex) if TEXT_MODE == "full" else overlay_keywords(fr, t, ex)
     return fr
 
 
@@ -208,6 +211,62 @@ def overlay(fr, t, ex):
         _loop_ring(fr, t, R, cy)
     headline(fr, t, "FOLLOW BRAIN LOOP", 72.0, None, 320, "black", 118)
     headline(fr, t, "KEEP YOUR BRAIN LOOPING.", 73.28, None, 440, "xbold", 58, TURQ)
+    return fr
+
+
+def keyword(fr, t, s, t0, t_out, y, size=170, color=WHITE, weight="black", x=None):
+    a, dy, sc, bl = reveal(t, t0, 0.35, t_out, 0.35)
+    if a > 0:
+        put(fr, fit_text(s, weight, size, 900, color=color), C.W / 2 if x is None else x, y, a, 0.9 + 0.1 * a, dy, bl)
+
+
+def overlay_keywords(fr, t, ex):
+    """Keyword-only typography: big numbers and single terms, no sentences, no branding."""
+    if 9.7 < t < 16.4:
+        if t < 11.65:
+            v = int(round(71 * ease_out(seg(t, 9.75, 10.35))))
+        else:
+            v = int(round(lerp(71, 29, ease_io(seg(t, 11.65, 12.8)))))
+        a, dy, sc, bl = reveal(t, 9.75, 0.3, 16.0, 0.35)
+        put(fr, text_img(f"{v}%", "black", 210, color=TURQ if t < 12.2 else EMBER), C.W / 2, 420, a, 0.9 + 0.1 * a, dy, bl)
+    if ex is not None and ex[0] == "xs":
+        cam = ex[1]
+        y_sea = X.zy(X.AVG_SEA, cam)
+        a, dy, sc, bl = reveal(t, 19.84, 0.35, 24.9, 0.35)
+        if a > 0:
+            put(fr, text_img("3.7 KM", "black", 140, color=GOLD), C.W / 2, y_sea - 110, a, sc, dy, bl)
+        y_land = X.zy(X.AVG_LAND, cam)
+        a, dy, sc, bl = reveal(t, 22.48, 0.35, 24.9, 0.35)
+        if a > 0:
+            put(fr, text_img("0.8 KM", "black", 120, color=GREEN), C.W / 2, y_land - 100, a, sc, dy, bl)
+        keyword(fr, t, "EVEREST", 25.76, 28.55, 200, 100)
+        keyword(fr, t, "8.8 KM", 26.0, 28.55, 300, 70, GOLD, "xbold")
+        a, dy, sc, bl = reveal(t, 27.2, 0.35, 30.6, 0.35)
+        if a > 0:
+            put(fr, text_img("MARIANA", "xbold", 50), 165, 1110, a, 1, dy, bl)
+            put(fr, text_img("TRENCH", "xbold", 50), 165, 1168, a, 1, dy, bl)
+            put(fr, text_img("~11 KM", "black", 64, color=GOLD), 165, 1240, a, 1, dy, bl)
+        keyword(fr, t, "2 KM", 28.8, 30.65, 230, 130, TURQ)
+    keyword(fr, t, "86%", 32.56, 36.2, 360, 210)
+    if ex is not None and ex[0] == "dist":
+        rotm, R = ex[1]
+        x, y, vis = G.project(rotm, G.NEMO[0], G.NEMO[1], R)
+        a = ease(seg(t, 40.9, 41.3)) * (1 - ease(seg(t, 43.0, 43.3)))
+        if vis and a > 0:
+            im = Image.fromarray(fr)
+            d = ImageDraw.Draw(im, "RGBA")
+            for k in range(3):
+                ph = ((t - 40.9) * 0.8 + k / 3) % 1.0
+                rr = 14 + ph * 70
+                d.ellipse([x - rr, y - rr, x + rr, y + rr], outline=(255, 214, 120, int(220 * (1 - ph) * a)), width=4)
+            d.ellipse([x - 10, y - 10, x + 10, y + 10], fill=(255, 230, 160, int(255 * a)))
+            fr[:] = np.asarray(im)
+    keyword(fr, t, "2,688 KM", 41.2, 43.1, 360, 170, GOLD)
+    keyword(fr, t, "90%+", 51.52, 53.7, 400, 200)
+    keyword(fr, t, "~50%", 55.92, 58.4, 400, 210, CHL)
+    keyword(fr, t, "O₂", 56.2, 58.4, 560, 90, WHITE, "xbold")
+    keyword(fr, t, "250M YEARS AGO", 62.72, 64.6, 330, 72, WHITE, "xbold")
+    keyword(fr, t, "PANGAEA", 64.88, 67.55, 330, 150, EMBER)
     return fr
 
 
