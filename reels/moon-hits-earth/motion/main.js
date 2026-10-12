@@ -786,7 +786,7 @@ scn(83.72, 91.2, (t, lt) => {
   if (t < THEIA_HIT + 0.12) {
     theia.visible = true;
     const k = ei(lin(t, 83.72, THEIA_HIT));
-    theia.position.copy(vmix(V3(1.0, 3.2, -0.6), contact, k));
+    theia.position.copy(vmix(V3(2.0, 2.45, -0.3), contact, k));
     if (t > THEIA_HIT) theia.position.addScaledVector(hitDir, -(t - THEIA_HIT) * 4);
     theia.rotation.y = t * 0.2;
   }
