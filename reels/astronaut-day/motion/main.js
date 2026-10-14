@@ -302,7 +302,7 @@ scn(67.0, 75.6, (t, lt) => {
   spine.visible = true; spine.rotation.set(0.1, -0.5 + t * 0.12, 0);
   const g = 0.035 * eio(lin(t, 68.7, 71.4)) * (1 - eio(lin(t, 73.8, 75.2)));
   spine.userData.layout(g);
-  holo.uniforms.uScan.value = mix(-0.8, 0.8, (t * 0.45) % 1);
+  holo.uniforms.uScan.value = -10;
   setCam(V3(0.0, 0.05, 4.0), V3(0.05, 0, 0), 32);
   const top = spine.userData.verts[8], bot = spine.userData.verts[0];
   spine.updateMatrixWorld();
